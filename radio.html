@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <title>PULSE SHORTS // LIVE FEED</title>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+
+  <style>
+    :root {
+      --bg-black: #000000;
+      --accent-red: #FF0000;
+      --text-main: #FFFFFF;
+      --text-muted: rgba(255, 255, 255, 0.7);
+      --font-ui: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      background-color: var(--bg-black);
+      overflow: hidden;
+      font-family: var(--font-ui);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Start Gesture Gate to Guarantee Unmuted Autoplay */
+    .start-gate {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 45%, #1a0206 0%, #000000 80%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .shorts-brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .shorts-brand-logo svg {
+      width: 48px;
+      height: 48px;
+      fill: var(--accent-red);
+    }
+
+    .shorts-brand-logo h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .shorts-brand-logo h1 span {
+      color: var(--accent-red);
+    }
+
+    .start-btn {
+      background: var(--accent-red);
+      color: #FFFFFF;
+      border: none;
+      padding: 18px 44px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-transform: uppercase;
+    }
+
+    .start-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 45px rgba(255, 0, 0, 0.85);
+    }
+
+    /* Vertical Shorts 9:16 Viewport Feed Container */
+    .shorts-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-width: 480px; /* Standard phone container on desktop */
+      background: #000000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shorts-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000000;
+      cursor: pointer;
+    }
+
+    .shorts-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000000;
+      display: none;
+    }
+
+    /* Top Floating Header Overlay */
+    .top-bar {
+      position: absolute;
+      top: calc(14px + env(safe-area-inset-top, 0px));
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .top-bar * {
+      pointer-events: auto;
+    }
+
+    .shorts-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+    }
+
+    .sound-toggle-pill {
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Play / Pause Animated Center Icon */
+    .center-state-icon {
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 15;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .center-state-icon.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .center-state-icon svg {
+      width: 36px;
+      height: 36px;
+      fill: #FFFFFF;
+    }
+
+    /* Double-Tap Heart Reaction */
+    .floating-heart {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      fill: var(--accent-red);
+      z-index: 25;
+      pointer-events: none;
+      transform: scale(0);
+      animation: heartPop 0.8s ease-out forwards;
+    }
+
+    @keyframes heartPop {
+      0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+      40% { transform: scale(1.2) rotate(0deg); opacity: 1; }
+      80% { transform: scale(1) translateY(-30px); opacity: 0.8; }
+      100% { transform: scale(0.9) translateY(-60px); opacity: 0; }
+    }
+
+    /* Right Action Bar (Like, Dislike, Comments, Share, Disc) */
+    .shorts-action-bar {
+      position: absolute;
+      right: 12px;
+      bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      z-index: 20;
+    }
+
+    .action-btn {
+      background: transparent;
+      border: none;
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .action-icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease;
+    }
+
+    .action-btn:active .action-icon-circle {
+      transform: scale(0.88);
+    }
+
+    .action-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #FFFFFF;
+    }
+
+    .action-btn.liked svg {
+      fill: var(--accent-red);
+    }
+
+    .action-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .sound-disc {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      border: 3px solid #333;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spinDisc 4s linear infinite;
+    }
+
+    .sound-disc img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @keyframes spinDisc {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Bottom Left Shorts Metadata Details */
+    .shorts-bottom-meta {
+      position: absolute;
+      left: 14px;
+      right: 76px;
+      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
+
+    .author-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .author-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-red), #FF6600);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border: 1.5px solid #FFFFFF;
+    }
+
+    .author-handle {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #FFFFFF;
+    }
+
+    .author-badge {
+      width: 14px;
+      height: 14px;
+      fill: #FFF;
+    }
+
+    .subscribe-tag {
+      background: #FFFFFF;
+      color: #000000;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-left: 4px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .shorts-description {
+      font-size: 0.88rem;
+      line-height: 1.35;
+      font-weight: 500;
+      color: #FFFFFF;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Bottom Slim Progress Bar */
+    .timeline-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.2);
+      z-index: 30;
+    }
+
+    .timeline-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-red);
+      transition: width 0.15s linear;
+    }
+
+    /* Desktop Navigation Helpers */
+    .desktop-nav-arrow {
+      position: absolute;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 50;
+      color: #FFF;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .desktop-nav-arrow:hover {
+      background: var(--accent-red);
+      transform: scale(1.08);
+    }
+
+    .nav-arrow-up { top: 45%; }
+    .nav-arrow-down { top: 55%; }
+
+    @media (max-width: 680px) {
+      .desktop-nav-arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1-Click Launch Modal Gate -->
+  <div id="startGate" class="start-gate">
+    <div class="shorts-brand-logo">
+      <svg viewBox="0 0 24 24"><path d="M17.77 10.32l-1.2-.5L18 9.06c1.84-.96 2.53-3.23 1.56-5.06s-3.24-2.53-5.07-1.56L6 6.94c-1.29.68-2.07 2.04-2 3.49.07 1.42.93 2.67 2.22 3.25l1.2.5L6 14.94c-1.84.96-2.53 3.23-1.56 5.06 1 1.83 3.26 2.52 5.07 1.56l8.49-4.5c1.29-.68 2.07-2.04 2-3.49-.07-1.42-.93-2.67-2.23-3.25zM10 14.5v-5l4.5 2.5-4.5 2.5z"/></svg>
+      <h1>PULSE <span>SHORTS</span></h1>
+    </div>
+    <button class="start-btn" onclick="startShortsFeed()">WATCH SHORTS</button>
+  </div>
+
+  <!-- Desktop Helpers -->
+  <div class="desktop-nav-arrow nav-arrow-up" onclick="advanceShort(-1)" title="Previous Short">
+    <svg style="width:24px;height:24px;fill:currentColor" viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+  </div>
+  <div class="desktop-nav-arrow nav-arrow-down" onclick="advanceShort(1)" title="Next Short">
+    <svg style="width:24px;height:24px;fill:currentColor" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+  </div>
+
+  <!-- Shorts 9:16 Vertical Screen Container -->
+  <div class="shorts-container" id="shortsContainer">
+    <!-- Top Header Overlay -->
+    <div class="top-bar">
+      <div class="shorts-badge">
+        <svg style="width:20px;height:20px;fill:var(--accent-red)" viewBox="0 0 24 24"><path d="M10 14.5v-5l4.5 2.5-4.5 2.5z"/></svg>
+        <span>Shorts</span>
+      </div>
+      <button class="sound-toggle-pill" id="soundBtn" onclick="toggleMute(event)">
+        <span id="soundIcon">🔇</span>
+        <span id="soundText">UNMUTE</span>
+      </button>
+    </div>
+
+    <!-- Center Play/Pause State Icon -->
+    <div id="centerStateIcon" class="center-state-icon">
+      <svg id="stateSvg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </div>
+
+    <!-- Active Native Video Player -->
+    <video
+      id="shortsVideoPlayer"
+      class="shorts-video"
+      playsinline
+      webkit-playsinline
+      preload="auto">
+    </video>
+
+    <!-- Embedded Fallback Player -->
+    <iframe id="embedPlayer" class="shorts-iframe" allow="autoplay; fullscreen"></iframe>
+
+    <!-- Right Action Bar -->
+    <div class="shorts-action-bar">
+      <button class="action-btn" id="likeBtn" onclick="toggleLike(event)">
+        <div class="action-icon-circle">
+          <svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+        </div>
+        <span class="action-label" id="likeCount">14K</span>
+      </button>
+
+      <button class="action-btn" onclick="toggleDislike(event)">
+        <div class="action-icon-circle">
+          <svg viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
+        </div>
+        <span class="action-label">Dislike</span>
+      </button>
+
+      <button class="action-btn" onclick="openComments(event)">
+        <div class="action-icon-circle">
+          <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+        </div>
+        <span class="action-label" id="commentCount">512</span>
+      </button>
+
+      <button class="action-btn" onclick="shareShort(event)">
+        <div class="action-icon-circle">
+          <svg viewBox="0 0 24 24"><path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z"/></svg>
+        </div>
+        <span class="action-label">Share</span>
+      </button>
+
+      <div class="sound-disc">
+        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=120&q=80" alt="Audio Disc">
+      </div>
+    </div>
+
+    <!-- Bottom Creator Meta -->
+    <div class="shorts-bottom-meta">
+      <div class="author-pill">
+        <div class="author-avatar" id="authorInitial">P</div>
+        <span class="author-handle" id="authorHandle">@channel</span>
+        <svg class="author-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <button class="subscribe-tag" onclick="handleSubscribe(event)">Subscribe</button>
+      </div>
+      <div class="shorts-description" id="shortTitle">Loading Pulse Shorts Feed...</div>
+    </div>
+
+    <!-- Bottom Timeline Bar -->
+    <div class="timeline-progress">
+      <div id="timelineProgressFill" class="timeline-progress-fill"></div>
+    </div>
+  </div>
+
+  <script>
+    const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbw5SRk0W7-aOA20VB5oxGRagNi8ZuATPicdX65pDBQFjA5pbtYI01lmTXNUUGKL7sqc/exec";
+    const POLL_INTERVAL = 15000;
+
+    let currentQueue = [];
+    let priorityQueue = [];
+    let currentTrackIndex = 0;
+    let cachedManifestEtag = null;
+    let pollTimerId = null;
+    let feedStarted = false;
+    let isLiked = false;
+
+    // Touch and Gesture Tracking
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let lastTapTime = 0;
+
+    const videoPlayer = document.getElementById("shortsVideoPlayer");
+    const embedPlayer = document.getElementById("embedPlayer");
+    const container = document.getElementById("shortsContainer");
+    const startGate = document.getElementById("startGate");
+    const centerIcon = document.getElementById("centerStateIcon");
+    const stateSvg = document.getElementById("stateSvg");
+    const progressBar = document.getElementById("timelineProgressFill");
+    const authorHandle = document.getElementById("authorHandle");
+    const authorInitial = document.getElementById("authorInitial");
+    const shortTitle = document.getElementById("shortTitle");
+    const soundBtn = document.getElementById("soundBtn");
+    const soundIcon = document.getElementById("soundIcon");
+    const soundText = document.getElementById("soundText");
+
+    window.addEventListener("DOMContentLoaded", () => {
+      initPlayerEvents();
+      initGestureNavigation();
+      fetchLiveManifest();
+      pollTimerId = setInterval(fetchLiveManifest, POLL_INTERVAL);
+    });
+
+    function startShortsFeed() {
+      feedStarted = true;
+      startGate.style.display = "none";
+
+      if (currentQueue.length > 0) {
+        currentTrackIndex = 0;
+        playShort(currentQueue[0]);
+      }
+    }
+
+    function initPlayerEvents() {
+      videoPlayer.addEventListener("timeupdate", () => {
+        if (!videoPlayer.duration || !isFinite(videoPlayer.duration)) return;
+        const pct = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+        progressBar.style.width = pct + "%";
+      });
+
+      // Advance automatically or loop upon finish
+      videoPlayer.addEventListener("ended", () => {
+        advanceShort(1);
+      });
+
+      videoPlayer.addEventListener("error", () => {
+        const track = currentQueue[currentTrackIndex];
+        if (track && track.fileId) {
+          videoPlayer.style.display = "none";
+          embedPlayer.style.display = "block";
+          embedPlayer.src = `https://drive.google.com/file/d/${encodeURIComponent(track.fileId)}/preview`;
+        } else {
+          advanceShort(1);
+        }
+      });
+    }
+
+    function initGestureNavigation() {
+      container.addEventListener("touchstart", (e) => {
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      container.addEventListener("touchend", (e) => {
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipeGesture();
+      }, { passive: true });
+
+      let wheelThrottle = false;
+      window.addEventListener("wheel", (e) => {
+        if (wheelThrottle || !feedStarted) return;
+        wheelThrottle = true;
+        setTimeout(() => wheelThrottle = false, 650);
+
+        if (e.deltaY > 25) {
+          advanceShort(1);
+        } else if (e.deltaY < -25) {
+          advanceShort(-1);
+        }
+      }, { passive: true });
+
+      window.addEventListener("keydown", (e) => {
+        if (!feedStarted) return;
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          advanceShort(1);
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          advanceShort(-1);
+        } else if (e.key === " " || e.key === "k" || e.key === "K") {
+          e.preventDefault();
+          togglePlayPause();
+        } else if (e.key === "m" || e.key === "M") {
+          e.preventDefault();
+          toggleMute();
+        }
+      });
+
+      videoPlayer.addEventListener("click", (e) => {
+        const currentTime = new Date().getTime();
+        const tapGap = currentTime - lastTapTime;
+
+        if (tapGap < 300 && tapGap > 0) {
+          spawnDoubleTapHeart(e.clientX, e.clientY);
+          if (!isLiked) toggleLike();
+        } else {
+          togglePlayPause();
+        }
+        lastTapTime = currentTime;
+      });
+    }
+
+    function handleSwipeGesture() {
+      const deltaY = touchStartY - touchEndY;
+      const threshold = 50;
+
+      if (deltaY > threshold) {
+        advanceShort(1);
+      } else if (deltaY < -threshold) {
+        advanceShort(-1);
+      }
+    }
+
+    function advanceShort(direction) {
+      if (currentQueue.length === 0) return;
+
+      if (direction > 0 && priorityQueue.length > 0) {
+        const urgent = priorityQueue.shift();
+        const found = currentQueue.findIndex(v => v.contentId === urgent.contentId);
+        if (found !== -1) currentTrackIndex = found;
+        playShort(urgent);
+        return;
+      }
+
+      currentTrackIndex += direction;
+
+      if (currentTrackIndex >= currentQueue.length) {
+        currentTrackIndex = 0;
+      } else if (currentTrackIndex < 0) {
+        currentTrackIndex = currentQueue.length - 1;
+      }
+
+      playShort(currentQueue[currentTrackIndex]);
+    }
+
+    function playShort(track) {
+      if (!track) return;
+
+      const handle = track.uploaderUsername ? `@${track.uploaderUsername}` : "@creator";
+      authorHandle.textContent = handle;
+      authorInitial.textContent = handle.replace("@", "").charAt(0).toUpperCase();
+      shortTitle.textContent = track.title || track.fileName || "Pulse Short";
+
+      isLiked = false;
+      document.getElementById("likeBtn").classList.remove("liked");
+      document.getElementById("likeCount").textContent = Math.floor(Math.random() * 80 + 10) + "K";
+      document.getElementById("commentCount").textContent = Math.floor(Math.random() * 800 + 100);
+
+      embedPlayer.style.display = "none";
+      embedPlayer.src = "";
+      videoPlayer.style.display = "block";
+
+      videoPlayer.pause();
+      videoPlayer.src = `https://drive.google.com/uc?export=download&id=${encodeURIComponent(track.fileId)}`;
+      videoPlayer.load();
+
+      const playPromise = videoPlayer.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          videoPlayer.muted = true;
+          updateSoundUI(true);
+          videoPlayer.play().catch(() => {
+            videoPlayer.style.display = "none";
+            embedPlayer.style.display = "block";
+            embedPlayer.src = `https://drive.google.com/file/d/${encodeURIComponent(track.fileId)}/preview`;
+          });
+        });
+      }
+    }
+
+    function togglePlayPause() {
+      if (videoPlayer.paused) {
+        videoPlayer.play().then(() => showCenterIcon(false)).catch(() => {});
+      } else {
+        videoPlayer.pause();
+        showCenterIcon(true);
+      }
+    }
+
+    function showCenterIcon(isPaused) {
+      stateSvg.innerHTML = isPaused
+        ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
+        : '<path d="M8 5v14l11-7z"/>';
+      centerIcon.classList.add("show");
+      setTimeout(() => centerIcon.classList.remove("show"), 500);
+    }
+
+    function toggleMute(e) {
+      if (e) e.stopPropagation();
+      videoPlayer.muted = !videoPlayer.muted;
+      updateSoundUI(videoPlayer.muted);
+    }
+
+    function updateSoundUI(isMuted) {
+      soundIcon.textContent = isMuted ? "🔇" : "🔊";
+      soundText.textContent = isMuted ? "UNMUTE" : "MUTE";
+    }
+
+    function toggleLike(e) {
+      if (e) e.stopPropagation();
+      const likeBtn = document.getElementById("likeBtn");
+      isLiked = !isLiked;
+      likeBtn.classList.toggle("liked", isLiked);
+    }
+
+    function toggleDislike(e) {
+      if (e) e.stopPropagation();
+      if (isLiked) toggleLike();
+    }
+
+    function openComments(e) {
+      if (e) e.stopPropagation();
+    }
+
+    function shareShort(e) {
+      if (e) e.stopPropagation();
+      if (navigator.share) {
+        navigator.share({
+          title: shortTitle.textContent,
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+      }
+    }
+
+    function handleSubscribe(e) {
+      if (e) e.stopPropagation();
+      const subBtn = e.target;
+      if (subBtn.textContent === "Subscribe") {
+        subBtn.textContent = "Subscribed";
+        subBtn.style.background = "rgba(255,255,255,0.2)";
+        subBtn.style.color = "#FFFFFF";
+      } else {
+        subBtn.textContent = "Subscribe";
+        subBtn.style.background = "#FFFFFF";
+        subBtn.style.color = "#000000";
+      }
+    }
+
+    function spawnDoubleTapHeart(x, y) {
+      const heart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      heart.setAttribute("viewBox", "0 0 24 24");
+      heart.classList.add("floating-heart");
+      heart.innerHTML = '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>';
+
+      const rect = container.getBoundingClientRect();
+      heart.style.left = (x - rect.left - 45) + "px";
+      heart.style.top = (y - rect.top - 45) + "px";
+
+      container.appendChild(heart);
+      setTimeout(() => heart.remove(), 800);
+    }
+
+    async function fetchLiveManifest() {
+      try {
+        let endpoint = `${GAS_ENDPOINT_URL}?action=getShortsFeed`;
+        if (cachedManifestEtag) endpoint += `&etag=${encodeURIComponent(cachedManifestEtag)}`;
+
+        const res = await fetch(endpoint, { method: "GET", mode: "cors" });
+        const json = await res.json();
+
+        if (json.success && json.data) {
+          if (json.data.notModified) return;
+          if (json.data.etag) cachedManifestEtag = json.data.etag;
+
+          if (json.data.manifest && json.data.manifest.length > 0) {
+            const incoming = json.data.manifest;
+
+            if (currentQueue.length === 0) {
+              currentQueue = incoming;
+              if (feedStarted) {
+                currentTrackIndex = 0;
+                playShort(currentQueue[0]);
+              }
+              return;
+            }
+
+            const existingIds = new Set(currentQueue.map(v => v.contentId));
+            const newBroadcasts = incoming.filter(v => !existingIds.has(v.contentId));
+
+            if (newBroadcasts.length > 0) {
+              newBroadcasts.forEach(nb => priorityQueue.push(nb));
+            }
+
+            const activeId = currentQueue[currentTrackIndex]?.contentId;
+            currentQueue = incoming;
+
+            if (activeId) {
+              const remapped = currentQueue.findIndex(v => v.contentId === activeId);
+              if (remapped !== -1) currentTrackIndex = remapped;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Manifest background polling error:", err);
+      }
+    }
+  </script>
+</body>
+</html>

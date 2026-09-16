@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <title>PULSE SHORTS // CREATOR STUDIO</title>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0F0F0F">
+
+  <style>
+    :root {
+      --bg-dark: #0F0F0F;
+      --card-dark: #1F1F1F;
+      --border-dark: rgba(255, 255, 255, 0.1);
+      --yt-red: #FF0000;
+      --yt-white: #F1F1F1;
+      --yt-muted: #AAAAAA;
+      --font-ui: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--yt-white);
+      font-family: var(--font-ui);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: calc(14px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px)) 16px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo svg {
+      width: 32px;
+      height: 32px;
+      fill: var(--yt-red);
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: var(--card-dark);
+      border: 1px solid var(--border-dark);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .beacon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00E676;
+      box-shadow: 0 0 8px #00E676;
+    }
+
+    .card {
+      background: var(--card-dark);
+      border: 1px solid var(--border-dark);
+      border-radius: 16px;
+      padding: clamp(16px, 4vw, 24px);
+      margin-bottom: 18px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 4px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      border: 1px solid var(--border-dark);
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--yt-muted);
+      padding: 10px 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--yt-muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 0.92rem;
+      min-height: 46px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--yt-red);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      text-transform: uppercase;
+      min-height: 46px;
+    }
+
+    .btn-primary {
+      background: var(--yt-red);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.1);
+      box-shadow: 0 0 16px rgba(255, 0, 0, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--yt-white);
+      border: 1px solid var(--border-dark);
+    }
+
+    .btn-danger {
+      background: #D32F2F;
+      color: #FFFFFF;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      filter: grayscale(1);
+    }
+
+    .user-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    .user-info h3 {
+      font-size: 1.05rem;
+      color: #FFFFFF;
+    }
+
+    .user-info p {
+      font-size: 0.8rem;
+      color: var(--yt-muted);
+      font-family: var(--font-mono);
+    }
+
+    .logout-btn {
+      padding: 6px 14px;
+      background: transparent;
+      border: 1px solid var(--border-dark);
+      border-radius: 999px;
+      color: var(--yt-muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    /* Vertical 9:16 Shorts Monitor Frame */
+    .shorts-viewport-wrap {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto 16px auto;
+      aspect-ratio: 9 / 16;
+      background: #000000;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      border: 2px solid var(--border-dark);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shorts-video-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .rec-badge-overlay {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(0, 0, 0, 0.75);
+      padding: 6px 12px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      border: 1px solid rgba(255, 0, 0, 0.4);
+    }
+
+    .rec-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--yt-red);
+      box-shadow: 0 0 8px var(--yt-red);
+      animation: livePulse 1.5s infinite;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .source-selection-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .dropzone {
+      border: 2px dashed var(--border-dark);
+      border-radius: 14px;
+      padding: clamp(24px, 5vw, 36px);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .dropzone:hover {
+      border-color: var(--yt-red);
+      background: rgba(255, 0, 0, 0.05);
+    }
+
+    .progress-box {
+      margin-top: 16px;
+      display: none;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      margin-bottom: 6px;
+      font-weight: 700;
+      color: var(--yt-red);
+    }
+
+    .progress-bar-bg {
+      height: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border-dark);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--yt-red);
+      transition: width 0.15s linear;
+    }
+
+    .preview-player {
+      width: 100%;
+      margin: 14px 0;
+      display: none;
+    }
+
+    .alert {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .alert-error {
+      background: rgba(255, 0, 0, 0.15);
+      border: 1px solid var(--yt-red);
+      color: #FFA4A4;
+    }
+
+    .alert-success {
+      background: rgba(0, 230, 118, 0.15);
+      border: 1px solid #00E676;
+      color: #A7F3D0;
+    }
+
+    .link-feed {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--yt-red);
+      text-decoration: none;
+      font-size: 0.88rem;
+      padding: 8px 16px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24"><path d="M17.77 10.32l-1.2-.5L18 9.06c1.84-.96 2.53-3.23 1.56-5.06s-3.24-2.53-5.07-1.56L6 6.94c-1.29.68-2.07 2.04-2 3.49.07 1.42.93 2.67 2.22 3.25l1.2.5L6 14.94c-1.84.96-2.53 3.23-1.56 5.06 1 1.83 3.26 2.52 5.07 1.56l8.49-4.5c1.29-.68 2.07-2.04 2-3.49-.07-1.42-.93-2.67-2.23-3.25zM10 14.5v-5l4.5 2.5-4.5 2.5z"/></svg>
+        </div>
+        <div class="brand-title">SHORTS // <span>STUDIO</span></div>
+      </div>
+      <div class="status-badge">
+        <span class="beacon"></span>
+        <span id="systemState">READY</span>
+      </div>
+    </header>
+
+    <div id="alertBox" class="alert"></div>
+
+    <!-- AUTHENTICATION CARD -->
+    <div id="authPanel" class="card">
+      <div class="tabs" role="tablist">
+        <button id="tabLoginBtn" class="tab-btn active" onclick="switchAuthTab('login')">SIGN IN</button>
+        <button id="tabRegisterBtn" class="tab-btn" onclick="switchAuthTab('register')">CREATE CHANNEL</button>
+        <button id="tabResetBtn" class="tab-btn" onclick="switchAuthTab('reset')">PASSWORD</button>
+      </div>
+
+      <form id="authForm" onsubmit="handleAuthSubmit(event)">
+        <div id="fullNameGroup" class="form-group" style="display: none;">
+          <label for="fullName">Creator / Channel Name</label>
+          <input type="text" id="fullName" autocomplete="name" placeholder="e.g. Alex Vlogs" maxlength="80">
+        </div>
+
+        <div class="form-group">
+          <label for="username">Channel Handle</label>
+          <input type="text" id="username" required autocomplete="username" placeholder="lowercase letters, numbers, underscores" maxlength="20">
+        </div>
+
+        <div id="passwordGroup" class="form-group">
+          <label for="password" id="passLabel">Password</label>
+          <input type="password" id="password" autocomplete="current-password" placeholder="Enter your password" maxlength="100">
+        </div>
+
+        <div id="confirmPassGroup" class="form-group" style="display: none;">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" autocomplete="new-password" placeholder="Re-enter your password" maxlength="100">
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="btn btn-primary">
+          <span>SIGN IN TO STUDIO</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- CREATOR STUDIO CONSOLE -->
+    <div id="studioPanel" class="card" style="display: none;">
+      <div class="user-banner">
+        <div class="user-info">
+          <h3 id="profileName">Creator</h3>
+          <p id="profileMeta">@channel - Verified Shorts Creator</p>
+        </div>
+        <button class="logout-btn" onclick="logout()">LOG OUT</button>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button id="tabCameraBtn" class="tab-btn active" onclick="switchStudioTab('camera')">CAMERA (9:16)</button>
+        <button id="tabFileBtn" class="tab-btn" onclick="switchStudioTab('file')">UPLOAD SHORTS</button>
+      </div>
+
+      <!-- 9:16 VERTICAL CAMERA RECORDER -->
+      <div id="cameraConsole">
+        <div class="source-selection-grid">
+          <button id="frontCamBtn" class="btn btn-secondary" onclick="initializeCameraCapture('user')">🤳 FRONT CAM</button>
+          <button id="backCamBtn" class="btn btn-secondary" onclick="initializeCameraCapture('environment')">📷 BACK CAM</button>
+        </div>
+
+        <div class="shorts-viewport-wrap">
+          <video id="studioLivePreview" class="shorts-video-preview" autoplay muted playsinline></video>
+          <div id="recBadge" class="rec-badge-overlay" style="display: none;">
+            <span class="rec-dot"></span>
+            <span id="recTimecode">00:00</span>
+          </div>
+        </div>
+
+        <div class="source-selection-grid">
+          <button id="startRecBtn" class="btn btn-primary" onclick="startVideoRecording()" disabled>RECORD</button>
+          <button id="stopRecBtn" class="btn btn-danger" onclick="stopVideoRecording()" disabled>STOP</button>
+        </div>
+      </div>
+
+      <!-- FILE UPLOAD DROPZONE -->
+      <div id="fileConsole" style="display: none;">
+        <div class="dropzone" id="dropArea" onclick="document.getElementById('videoFileInput').click()">
+          <svg style="width:40px;height:40px;fill:var(--yt-muted);margin-bottom:8px;" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+          <p style="font-weight:700;">Select Shorts Video</p>
+          <p style="font-size:0.75rem;color:var(--yt-muted);margin-top:4px;">Recommended: 9:16 Vertical (Max 256MB)</p>
+          <input type="file" id="videoFileInput" accept="video/*" style="display:none" onchange="handleVideoFileSelect(event)">
+        </div>
+      </div>
+
+      <!-- REVIEW & INGESTION -->
+      <div id="submissionContainer" style="margin-top: 16px;">
+        <div id="previewBox" class="preview-player">
+          <label>Shorts Review</label>
+          <div class="shorts-viewport-wrap" style="margin-bottom: 12px;">
+            <video id="reviewVideo" class="shorts-video-preview" controls playsinline></video>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="trackTitle">Caption / Short Title</label>
+          <input type="text" id="trackTitle" placeholder="Add a title or #hashtags" maxlength="100">
+        </div>
+
+        <button id="publishBtn" class="btn btn-primary" onclick="initiateChunkedUploadPipeline()" disabled>
+          <span>PUBLISH TO SHORTS FEED</span>
+        </button>
+
+        <div id="uploadProgress" class="progress-box">
+          <div class="progress-label">
+            <span id="stageLabel">Uploading: 0%</span>
+            <span id="percentLabel">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div id="progressBar" class="progress-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center;">
+      <a href="radio.html" class="link-feed" target="_blank">
+        <span>Go to Live Shorts Feed</span>
+        <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbw5SRk0W7-aOA20VB5oxGRagNi8ZuATPicdX65pDBQFjA5pbtYI01lmTXNUUGKL7sqc/exec";
+    const MAX_FILE_SIZE = 256 * 1024 * 1024;
+    const CHUNK_BYTE_SIZE = 3 * 1024 * 1024; // 3MB chunk slice
+
+    let currentAuthMode = "login";
+    let currentUserSession = null;
+    let videoMediaStream = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let recTimerId = null;
+    let recStartTime = 0;
+    let processedBlob = null;
+    let processedDuration = 0;
+    let activePreviewBlobUrl = null;
+
+    window.addEventListener("DOMContentLoaded", () => {
+      checkStoredSession();
+      initVideoDropzone();
+    });
+
+    window.addEventListener("beforeunload", () => {
+      teardownMediaTracks();
+    });
+
+    function showAlert(msg, isError = true) {
+      const box = document.getElementById("alertBox");
+      box.className = isError ? "alert alert-error" : "alert alert-success";
+      box.textContent = msg;
+      box.style.display = "block";
+      setTimeout(() => { box.style.display = "none"; }, 5000);
+    }
+
+    function checkStoredSession() {
+      const raw = localStorage.getItem("PULSE_SHORTS_AUTH_SESSION");
+      if (raw) {
+        try {
+          currentUserSession = JSON.parse(raw);
+          showStudioView();
+        } catch (e) {
+          localStorage.removeItem("PULSE_SHORTS_AUTH_SESSION");
+        }
+      }
+    }
+
+    function switchAuthTab(mode) {
+      currentAuthMode = mode;
+      document.getElementById("tabLoginBtn").className = mode === "login" ? "tab-btn active" : "tab-btn";
+      document.getElementById("tabRegisterBtn").className = mode === "register" ? "tab-btn active" : "tab-btn";
+      document.getElementById("tabResetBtn").className = mode === "reset" ? "tab-btn active" : "tab-btn";
+
+      document.getElementById("fullNameGroup").style.display = (mode === "register" || mode === "reset") ? "block" : "none";
+      document.getElementById("confirmPassGroup").style.display = (mode === "register" || mode === "reset") ? "block" : "none";
+
+      if (mode === "reset") {
+        document.getElementById("passLabel").textContent = "New Password";
+        document.getElementById("authSubmitBtn").querySelector("span").textContent = "UPDATE PASSWORD";
+      } else if (mode === "register") {
+        document.getElementById("passLabel").textContent = "Password";
+        document.getElementById("authSubmitBtn").querySelector("span").textContent = "CREATE CHANNEL";
+      } else {
+        document.getElementById("passLabel").textContent = "Password";
+        document.getElementById("authSubmitBtn").querySelector("span").textContent = "SIGN IN TO STUDIO";
+      }
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const user = document.getElementById("username").value.trim().toLowerCase();
+      const pass = document.getElementById("password").value;
+      const submitBtn = document.getElementById("authSubmitBtn");
+
+      if (!/^[a-z0-9_]{3,20}$/.test(user)) {
+        showAlert("Username must be 3-20 lowercase letters, numbers, or underscores.");
+        return;
+      }
+
+      if (currentAuthMode === "reset") {
+        const fullName = document.getElementById("fullName").value.trim();
+        const confPass = document.getElementById("confirmPassword").value;
+        if (!fullName || !pass) {
+          showAlert("Creator Name and New Password required.");
+          return;
+        }
+        if (pass !== confPass) {
+          showAlert("Passwords do not match.");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        try {
+          const resp = await executeGasRequest({
+            action: "resetPassword",
+            username: user,
+            fullName: fullName,
+            newPassword: pass
+          });
+
+          if (resp.success) {
+            showAlert("Password updated successfully. Please sign in.", false);
+            switchAuthTab("login");
+          } else {
+            showAlert(resp.error || "Reset failed.");
+          }
+        } catch (err) {
+          showAlert("Network failure resetting password.");
+        } finally {
+          submitBtn.disabled = false;
+        }
+        return;
+      }
+
+      if (currentAuthMode === "register") {
+        const fullName = document.getElementById("fullName").value.trim();
+        const confPass = document.getElementById("confirmPassword").value;
+        if (!fullName || !pass) {
+          showAlert("Channel Name and Password required.");
+          return;
+        }
+        if (pass !== confPass) {
+          showAlert("Passwords do not match.");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        try {
+          const resp = await executeGasRequest({
+            action: "registerUser",
+            username: user,
+            password: pass,
+            fullName: fullName
+          });
+
+          if (resp.success) {
+            currentUserSession = resp.data;
+            localStorage.setItem("PULSE_SHORTS_AUTH_SESSION", JSON.stringify(resp.data));
+            showStudioView();
+          } else {
+            showAlert(resp.error || "Registration failed.");
+          }
+        } catch (err) {
+          showAlert("Network failure during registration.");
+        } finally {
+          submitBtn.disabled = false;
+        }
+      } else {
+        submitBtn.disabled = true;
+        try {
+          const resp = await executeGasRequest({
+            action: "authenticateUser",
+            username: user,
+            password: pass
+          });
+
+          if (resp.success) {
+            currentUserSession = resp.data;
+            localStorage.setItem("PULSE_SHORTS_AUTH_SESSION", JSON.stringify(resp.data));
+            showStudioView();
+          } else {
+            showAlert(resp.error || "Authentication failed.");
+          }
+        } catch (err) {
+          showAlert("Network failure during login.");
+        } finally {
+          submitBtn.disabled = false;
+        }
+      }
+    }
+
+    function showStudioView() {
+      document.getElementById("authPanel").style.display = "none";
+      document.getElementById("studioPanel").style.display = "block";
+      document.getElementById("profileName").textContent = currentUserSession.fullName;
+      document.getElementById("profileMeta").textContent = `@${currentUserSession.username} - Shorts Creator`;
+      initializeCameraCapture('user');
+    }
+
+    function logout() {
+      teardownMediaTracks();
+      if (activePreviewBlobUrl) {
+        URL.revokeObjectURL(activePreviewBlobUrl);
+        activePreviewBlobUrl = null;
+      }
+      localStorage.removeItem("PULSE_SHORTS_AUTH_SESSION");
+      currentUserSession = null;
+      location.reload();
+    }
+
+    function switchStudioTab(tab) {
+      const isCam = tab === "camera";
+      document.getElementById("tabCameraBtn").className = isCam ? "tab-btn active" : "tab-btn";
+      document.getElementById("tabFileBtn").className = !isCam ? "tab-btn active" : "tab-btn";
+      document.getElementById("cameraConsole").style.display = isCam ? "block" : "none";
+      document.getElementById("fileConsole").style.display = !isCam ? "block" : "none";
+    }
+
+    function teardownMediaTracks() {
+      if (videoMediaStream) {
+        videoMediaStream.getTracks().forEach(t => t.stop());
+        videoMediaStream = null;
+      }
+    }
+
+    async function initializeCameraCapture(facingMode) {
+      teardownMediaTracks();
+      document.getElementById("frontCamBtn").style.borderColor = facingMode === "user" ? "var(--yt-red)" : "var(--border-dark)";
+      document.getElementById("backCamBtn").style.borderColor = facingMode === "environment" ? "var(--yt-red)" : "var(--border-dark)";
+
+      // Native 9:16 Vertical Constraints
+      const constraints = {
+        video: {
+          facingMode: facingMode === "environment" ? { ideal: "environment" } : "user",
+          width: { ideal: 720 },
+          height: { ideal: 1280 },
+          aspectRatio: { ideal: 9 / 16 }
+        },
+        audio: true
+      };
+
+      try {
+        videoMediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (err) {
+        try {
+          videoMediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        } catch (e) {
+          showAlert("Camera access denied or unavailable: " + e.message);
+          return;
+        }
+      }
+
+      const preview = document.getElementById("studioLivePreview");
+      preview.srcObject = videoMediaStream;
+      document.getElementById("startRecBtn").disabled = false;
+    }
+
+    function startVideoRecording() {
+      if (!videoMediaStream) return;
+      let mimeType = "video/webm;codecs=vp8,opus";
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = MediaRecorder.isTypeSupported("video/mp4") ? "video/mp4" : "video/webm";
+      }
+
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(videoMediaStream, { mimeType });
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        processedBlob = new Blob(recordedChunks, { type: mimeType });
+        if (activePreviewBlobUrl) URL.revokeObjectURL(activePreviewBlobUrl);
+        activePreviewBlobUrl = URL.createObjectURL(processedBlob);
+
+        const reviewVid = document.getElementById("reviewVideo");
+        reviewVid.src = activePreviewBlobUrl;
+        document.getElementById("previewBox").style.display = "block";
+        document.getElementById("publishBtn").disabled = false;
+        processedDuration = Math.round((Date.now() - recStartTime) / 1000);
+      };
+
+      mediaRecorder.start(1000);
+      recStartTime = Date.now();
+      recTimerId = setInterval(updateVideoTimer, 500);
+
+      document.getElementById("recBadge").style.display = "flex";
+      document.getElementById("startRecBtn").disabled = true;
+      document.getElementById("stopRecBtn").disabled = false;
+    }
+
+    function stopVideoRecording() {
+      if (!mediaRecorder) return;
+      mediaRecorder.stop();
+      clearInterval(recTimerId);
+      document.getElementById("recBadge").style.display = "none";
+      document.getElementById("startRecBtn").disabled = false;
+      document.getElementById("stopRecBtn").disabled = true;
+    }
+
+    function updateVideoTimer() {
+      const totalSeconds = Math.floor((Date.now() - recStartTime) / 1000);
+      const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+      const secs = String(totalSeconds % 60).padStart(2, "0");
+      document.getElementById("recTimecode").textContent = `${mins}:${secs}`;
+    }
+
+    function initVideoDropzone() {
+      const dropzone = document.getElementById("dropArea");
+      ["dragenter", "dragover"].forEach(name => {
+        dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.style.borderColor = "var(--yt-red)"; });
+      });
+      ["dragleave", "drop"].forEach(name => {
+        dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.style.borderColor = "var(--border-dark)"; });
+      });
+      dropzone.addEventListener("drop", (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) processSelectedVideoFile(files[0]);
+      });
+    }
+
+    function handleVideoFileSelect(e) {
+      if (e.target.files.length > 0) processSelectedVideoFile(e.target.files[0]);
+    }
+
+    function processSelectedVideoFile(file) {
+      if (!file.type.startsWith("video/") && !file.name.match(/\.(mp4|webm|mov|avi|mkv)$/i)) {
+        showAlert("Please select a valid video file.");
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        showAlert("File exceeds 256 MB buffer limit.");
+        return;
+      }
+
+      processedBlob = file;
+      if (activePreviewBlobUrl) URL.revokeObjectURL(activePreviewBlobUrl);
+      activePreviewBlobUrl = URL.createObjectURL(file);
+
+      const reviewVid = document.getElementById("reviewVideo");
+      reviewVid.src = activePreviewBlobUrl;
+      document.getElementById("previewBox").style.display = "block";
+      document.getElementById("publishBtn").disabled = false;
+
+      reviewVid.addEventListener("loadedmetadata", () => {
+        processedDuration = isFinite(reviewVid.duration) ? reviewVid.duration : 0;
+      });
+    }
+
+    function arrayBufferToBase64(buffer) {
+      let binary = "";
+      const bytes = new Uint8Array(buffer);
+      const len = bytes.byteLength;
+      const chunkSize = 16384;
+      for (let i = 0; i < len; i += chunkSize) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + chunkSize, len)));
+      }
+      return btoa(binary);
+    }
+
+    async function initiateChunkedUploadPipeline() {
+      if (!processedBlob) {
+        showAlert("No video file selected.");
+        return;
+      }
+
+      const titleInput = document.getElementById("trackTitle");
+      const title = titleInput.value.trim() || "My Pulse Short";
+
+      const publishBtn = document.getElementById("publishBtn");
+      const progressBox = document.getElementById("uploadProgress");
+      const stageLabel = document.getElementById("stageLabel");
+      const percentLabel = document.getElementById("percentLabel");
+      const progressBar = document.getElementById("progressBar");
+
+      publishBtn.disabled = true;
+      progressBox.style.display = "block";
+
+      function setProgressUI(label, pct) {
+        stageLabel.textContent = label;
+        percentLabel.textContent = Math.round(pct) + "%";
+        progressBar.style.width = pct + "%";
+      }
+
+      try {
+        setProgressUI("Initializing Upload...", 2);
+
+        const initResp = await executeGasRequest({
+          action: "initChunkedUpload",
+          auth: {
+            username: currentUserSession.username,
+            token: currentUserSession.token
+          }
+        });
+
+        if (!initResp.success || !initResp.data.uploadSessionId) {
+          throw new Error(initResp.error || "Failed to initiate session.");
+        }
+
+        const sessionId = initResp.data.uploadSessionId;
+        const totalBytes = processedBlob.size;
+        let offset = 0;
+        let chunkIndex = 0;
+        const totalChunks = Math.ceil(totalBytes / CHUNK_BYTE_SIZE);
+
+        while (offset < totalBytes) {
+          const slice = processedBlob.slice(offset, offset + CHUNK_BYTE_SIZE);
+          const sliceBuffer = await slice.arrayBuffer();
+          const base64Chunk = arrayBufferToBase64(sliceBuffer);
+
+          chunkIndex++;
+          const currentPercent = 5 + ((offset / totalBytes) * 88);
+          setProgressUI(`Uploading: ${chunkIndex}/${totalChunks} (${Math.round((offset / totalBytes) * 100)}%)`, currentPercent);
+
+          const chunkResp = await executeGasRequest({
+            action: "appendChunk",
+            uploadSessionId: sessionId,
+            chunkBase64: base64Chunk
+          });
+
+          if (!chunkResp.success) {
+            throw new Error(chunkResp.error || "Chunk upload interrupted.");
+          }
+
+          offset += CHUNK_BYTE_SIZE;
+        }
+
+        setProgressUI("Processing Short...", 96);
+
+        const finalResp = await executeGasRequest({
+          action: "finalizeUpload",
+          uploadSessionId: sessionId,
+          auth: {
+            username: currentUserSession.username,
+            token: currentUserSession.token
+          },
+          metadata: {
+            title: title,
+            fileName: processedBlob.name || "short.mp4",
+            mimeType: processedBlob.type || "video/mp4",
+            durationSeconds: Math.round(processedDuration),
+            sizeBytes: processedBlob.size
+          }
+        });
+
+        if (finalResp.success) {
+          setProgressUI("Short Live on Feed!", 100);
+          showAlert("Short published successfully!", false);
+          setTimeout(() => { location.reload(); }, 1200);
+        } else {
+          throw new Error(finalResp.error || "Failed to finalize short.");
+        }
+      } catch (err) {
+        showAlert("Upload Error: " + err.message);
+        publishBtn.disabled = false;
+      }
+    }
+
+    async function executeGasRequest(data, method = "POST", maxRetries = 3) {
+      let delay = 1500;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          let url = GAS_ENDPOINT_URL;
+          let options = { method: method, mode: "cors" };
+
+          if (method === "GET") {
+            const params = new URLSearchParams(data).toString();
+            url += (url.includes("?") ? "&" : "?") + params;
+          } else {
+            options.headers = { "Content-Type": "text/plain;charset=utf-8" };
+            options.body = JSON.stringify(data);
+          }
+
+          const res = await fetch(url, options);
+          return await res.json();
+        } catch (err) {
+          if (attempt === maxRetries) throw err;
+          await new Promise(r => setTimeout(r, delay));
+          delay *= 2;
+        }
+      }
+    }
+  </script>
+</body>
+</html>
