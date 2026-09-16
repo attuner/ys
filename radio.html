@@ -12,9 +12,9 @@
   <style>
     :root {
       --bg-black: #000000;
-      --accent-red: #FF0000;
-      --text-main: #FFFFFF;
-      --text-muted: rgba(255, 255, 255, 0.7);
+      --yt-red: #FF0000;
+      --text-white: #FFFFFF;
+      --text-muted: rgba(255, 255, 255, 0.75);
       --font-ui: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", sans-serif;
     }
 
@@ -34,76 +34,19 @@
       background-color: var(--bg-black);
       overflow: hidden;
       font-family: var(--font-ui);
-      color: var(--text-main);
+      color: var(--text-white);
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    /* Start Gesture Gate to Guarantee Unmuted Autoplay */
-    .start-gate {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at 50% 45%, #1a0206 0%, #000000 80%);
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-    }
-
-    .shorts-brand-logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .shorts-brand-logo svg {
-      width: 48px;
-      height: 48px;
-      fill: var(--accent-red);
-    }
-
-    .shorts-brand-logo h1 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-
-    .shorts-brand-logo h1 span {
-      color: var(--accent-red);
-    }
-
-    .start-btn {
-      background: var(--accent-red);
-      color: #FFFFFF;
-      border: none;
-      padding: 18px 44px;
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      border-radius: 999px;
-      cursor: pointer;
-      box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      text-transform: uppercase;
-    }
-
-    .start-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 45px rgba(255, 0, 0, 0.85);
-    }
-
-    /* Vertical Shorts 9:16 Viewport Feed Container */
+    /* Vertical Shorts 9:16 Phone Aspect Viewport */
     .shorts-container {
       position: relative;
       width: 100vw;
       height: 100vh;
       height: 100dvh;
-      max-width: 480px; /* Standard phone container on desktop */
+      max-width: 500px; /* Centered feed on desktop */
       background: #000000;
       overflow: hidden;
       display: flex;
@@ -111,6 +54,7 @@
       justify-content: center;
     }
 
+    /* Clean Video Viewport (No video controls) */
     .shorts-video {
       width: 100%;
       height: 100%;
@@ -127,49 +71,7 @@
       display: none;
     }
 
-    /* Top Floating Header Overlay */
-    .top-bar {
-      position: absolute;
-      top: calc(14px + env(safe-area-inset-top, 0px));
-      left: 16px;
-      right: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 20;
-      pointer-events: none;
-    }
-
-    .top-bar * {
-      pointer-events: auto;
-    }
-
-    .shorts-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 800;
-      font-size: 0.95rem;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
-    }
-
-    .sound-toggle-pill {
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #FFFFFF;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* Play / Pause Animated Center Icon */
+    /* Animated Center Play/Pause Indicator */
     .center-state-icon {
       position: absolute;
       width: 72px;
@@ -202,7 +104,7 @@
       position: absolute;
       width: 90px;
       height: 90px;
-      fill: var(--accent-red);
+      fill: var(--yt-red);
       z-index: 25;
       pointer-events: none;
       transform: scale(0);
@@ -216,15 +118,15 @@
       100% { transform: scale(0.9) translateY(-60px); opacity: 0; }
     }
 
-    /* Right Action Bar (Like, Dislike, Comments, Share, Disc) */
+    /* Right Action Bar (Likes, Dislikes, Comments, Share, Audio Disc) */
     .shorts-action-bar {
       position: absolute;
       right: 12px;
-      bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+      bottom: calc(24px + env(safe-area-inset-bottom, 0px));
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
       z-index: 20;
     }
 
@@ -262,8 +164,8 @@
       fill: #FFFFFF;
     }
 
-    .action-btn.liked svg {
-      fill: var(--accent-red);
+    .action-btn.active-action svg {
+      fill: var(--yt-red);
     }
 
     .action-label {
@@ -274,11 +176,11 @@
     }
 
     .sound-disc {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       background: #1a1a1a;
-      border: 3px solid #333;
+      border: 2px solid #555;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -286,22 +188,16 @@
       animation: spinDisc 4s linear infinite;
     }
 
-    .sound-disc img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
     @keyframes spinDisc {
       100% { transform: rotate(360deg); }
     }
 
-    /* Bottom Left Shorts Metadata Details */
+    /* Bottom Left Shorts Creator Info */
     .shorts-bottom-meta {
       position: absolute;
       left: 14px;
       right: 76px;
-      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
       z-index: 20;
       display: flex;
       flex-direction: column;
@@ -321,7 +217,7 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-red), #FF6600);
+      background: linear-gradient(135deg, var(--yt-red), #FF6600);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -336,12 +232,6 @@
       color: #FFFFFF;
     }
 
-    .author-badge {
-      width: 14px;
-      height: 14px;
-      fill: #FFF;
-    }
-
     .subscribe-tag {
       background: #FFFFFF;
       color: #000000;
@@ -352,6 +242,12 @@
       margin-left: 4px;
       cursor: pointer;
       border: none;
+      transition: all 0.2s ease;
+    }
+
+    .subscribe-tag.subscribed {
+      background: rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
     }
 
     .shorts-description {
@@ -366,7 +262,7 @@
       text-overflow: ellipsis;
     }
 
-    /* Bottom Slim Progress Bar */
+    /* Only Control Displayed: Slim Bottom Progress Line */
     .timeline-progress {
       position: absolute;
       bottom: 0;
@@ -380,80 +276,118 @@
     .timeline-progress-fill {
       height: 100%;
       width: 0%;
-      background: var(--accent-red);
+      background: var(--yt-red);
       transition: width 0.15s linear;
     }
 
-    /* Desktop Navigation Helpers */
-    .desktop-nav-arrow {
+    /* Sliding Comments Drawer */
+    .comments-drawer {
       position: absolute;
-      right: 20px;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 65%;
+      background: #181818;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      z-index: 100;
       display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.8);
+    }
+
+    .comments-drawer.open {
+      transform: translateY(0);
+    }
+
+    .comments-header {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 50;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .close-comments-btn {
+      background: transparent;
+      border: none;
       color: #FFF;
-      transition: background 0.2s ease, transform 0.2s ease;
+      font-size: 1.2rem;
+      cursor: pointer;
     }
 
-    .desktop-nav-arrow:hover {
-      background: var(--accent-red);
-      transform: scale(1.08);
+    .comments-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .nav-arrow-up { top: 45%; }
-    .nav-arrow-down { top: 55%; }
+    .comment-card {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.82rem;
+    }
 
-    @media (max-width: 680px) {
-      .desktop-nav-arrow { display: none; }
+    .comment-card .author {
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .comment-card .text {
+      color: #FFFFFF;
+      line-height: 1.3;
+    }
+
+    .comment-input-wrap {
+      padding: 10px 14px calc(12px + env(safe-area-inset-bottom, 0px)) 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      gap: 8px;
+    }
+
+    .comment-input-wrap input {
+      flex: 1;
+      background: #282828;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      padding: 8px 14px;
+      color: #FFF;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .comment-input-wrap button {
+      background: var(--yt-red);
+      border: none;
+      color: #FFF;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <!-- 1-Click Launch Modal Gate -->
-  <div id="startGate" class="start-gate">
-    <div class="shorts-brand-logo">
-      <svg viewBox="0 0 24 24"><path d="M17.77 10.32l-1.2-.5L18 9.06c1.84-.96 2.53-3.23 1.56-5.06s-3.24-2.53-5.07-1.56L6 6.94c-1.29.68-2.07 2.04-2 3.49.07 1.42.93 2.67 2.22 3.25l1.2.5L6 14.94c-1.84.96-2.53 3.23-1.56 5.06 1 1.83 3.26 2.52 5.07 1.56l8.49-4.5c1.29-.68 2.07-2.04 2-3.49-.07-1.42-.93-2.67-2.23-3.25zM10 14.5v-5l4.5 2.5-4.5 2.5z"/></svg>
-      <h1>PULSE <span>SHORTS</span></h1>
-    </div>
-    <button class="start-btn" onclick="startShortsFeed()">WATCH SHORTS</button>
-  </div>
-
-  <!-- Desktop Helpers -->
-  <div class="desktop-nav-arrow nav-arrow-up" onclick="advanceShort(-1)" title="Previous Short">
-    <svg style="width:24px;height:24px;fill:currentColor" viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
-  </div>
-  <div class="desktop-nav-arrow nav-arrow-down" onclick="advanceShort(1)" title="Next Short">
-    <svg style="width:24px;height:24px;fill:currentColor" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
-  </div>
-
-  <!-- Shorts 9:16 Vertical Screen Container -->
+  <!-- Shorts Vertical Screen Container -->
   <div class="shorts-container" id="shortsContainer">
-    <!-- Top Header Overlay -->
-    <div class="top-bar">
-      <div class="shorts-badge">
-        <svg style="width:20px;height:20px;fill:var(--accent-red)" viewBox="0 0 24 24"><path d="M10 14.5v-5l4.5 2.5-4.5 2.5z"/></svg>
-        <span>Shorts</span>
-      </div>
-      <button class="sound-toggle-pill" id="soundBtn" onclick="toggleMute(event)">
-        <span id="soundIcon">🔇</span>
-        <span id="soundText">UNMUTE</span>
-      </button>
-    </div>
 
-    <!-- Center Play/Pause State Icon -->
+    <!-- Center Play/Pause Icon -->
     <div id="centerStateIcon" class="center-state-icon">
       <svg id="stateSvg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
     </div>
 
-    <!-- Active Native Video Player -->
+    <!-- Active Native Video Player (Controls Removed) -->
     <video
       id="shortsVideoPlayer"
       class="shorts-video"
@@ -465,27 +399,27 @@
     <!-- Embedded Fallback Player -->
     <iframe id="embedPlayer" class="shorts-iframe" allow="autoplay; fullscreen"></iframe>
 
-    <!-- Right Action Bar -->
+    <!-- Right Side Engagement Bar: Synced 100% with Google Sheets -->
     <div class="shorts-action-bar">
-      <button class="action-btn" id="likeBtn" onclick="toggleLike(event)">
+      <button class="action-btn" id="likeBtn" onclick="handleLikeClick(event)">
         <div class="action-icon-circle">
           <svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
         </div>
-        <span class="action-label" id="likeCount">14K</span>
+        <span class="action-label" id="likeCount">0</span>
       </button>
 
-      <button class="action-btn" onclick="toggleDislike(event)">
+      <button class="action-btn" id="dislikeBtn" onclick="handleDislikeClick(event)">
         <div class="action-icon-circle">
           <svg viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
         </div>
-        <span class="action-label">Dislike</span>
+        <span class="action-label" id="dislikeCount">Dislike</span>
       </button>
 
-      <button class="action-btn" onclick="openComments(event)">
+      <button class="action-btn" onclick="openCommentsDrawer(event)">
         <div class="action-icon-circle">
           <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
         </div>
-        <span class="action-label" id="commentCount">512</span>
+        <span class="action-label" id="commentCount">0</span>
       </button>
 
       <button class="action-btn" onclick="shareShort(event)">
@@ -496,25 +430,38 @@
       </button>
 
       <div class="sound-disc">
-        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=120&q=80" alt="Audio Disc">
+        <svg style="width:18px;height:18px;fill:#FFF;" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
       </div>
     </div>
 
-    <!-- Bottom Creator Meta -->
+    <!-- Bottom Left Channel Metadata & Subscription -->
     <div class="shorts-bottom-meta">
       <div class="author-pill">
         <div class="author-avatar" id="authorInitial">P</div>
         <span class="author-handle" id="authorHandle">@channel</span>
-        <svg class="author-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-        <button class="subscribe-tag" onclick="handleSubscribe(event)">Subscribe</button>
+        <button id="subBtn" class="subscribe-tag" onclick="handleSubscribeClick(event)">Subscribe</button>
       </div>
-      <div class="shorts-description" id="shortTitle">Loading Pulse Shorts Feed...</div>
+      <div class="shorts-description" id="shortTitle">Loading Shorts...</div>
     </div>
 
-    <!-- Bottom Timeline Bar -->
+    <!-- Only Visible Video Control: Slim Progress Line -->
     <div class="timeline-progress">
       <div id="timelineProgressFill" class="timeline-progress-fill"></div>
     </div>
+
+    <!-- Slide-up Interactive Comments Drawer -->
+    <div id="commentsDrawer" class="comments-drawer">
+      <div class="comments-header">
+        <span>Comments</span>
+        <button class="close-comments-btn" onclick="closeCommentsDrawer()">&times;</button>
+      </div>
+      <div id="commentsList" class="comments-list"></div>
+      <div class="comment-input-wrap">
+        <input type="text" id="commentInput" placeholder="Add a comment..." maxlength="200" onkeydown="if(event.key==='Enter')postComment()">
+        <button onclick="postComment()">Post</button>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -522,14 +469,18 @@
     const POLL_INTERVAL = 15000;
 
     let currentQueue = [];
-    let priorityQueue = [];
     let currentTrackIndex = 0;
-    let cachedManifestEtag = null;
     let pollTimerId = null;
-    let feedStarted = false;
-    let isLiked = false;
+    let isDrawerOpen = false;
 
-    // Touch and Gesture Tracking
+    // Persistent Unique Viewer Identity for 100% Sheet Sync
+    let viewerSessionId = localStorage.getItem("PULSE_SHORTS_VIEWER_ID");
+    if (!viewerSessionId) {
+      viewerSessionId = "usr_" + Math.random().toString(36).substring(2, 12);
+      localStorage.setItem("PULSE_SHORTS_VIEWER_ID", viewerSessionId);
+    }
+
+    // Gesture & Touch Coordinates for Vertical Up/Down Navigation
     let touchStartY = 0;
     let touchEndY = 0;
     let lastTapTime = 0;
@@ -537,42 +488,46 @@
     const videoPlayer = document.getElementById("shortsVideoPlayer");
     const embedPlayer = document.getElementById("embedPlayer");
     const container = document.getElementById("shortsContainer");
-    const startGate = document.getElementById("startGate");
     const centerIcon = document.getElementById("centerStateIcon");
     const stateSvg = document.getElementById("stateSvg");
     const progressBar = document.getElementById("timelineProgressFill");
     const authorHandle = document.getElementById("authorHandle");
     const authorInitial = document.getElementById("authorInitial");
     const shortTitle = document.getElementById("shortTitle");
-    const soundBtn = document.getElementById("soundBtn");
-    const soundIcon = document.getElementById("soundIcon");
-    const soundText = document.getElementById("soundText");
+    const subBtn = document.getElementById("subBtn");
+    const likeBtn = document.getElementById("likeBtn");
+    const dislikeBtn = document.getElementById("dislikeBtn");
+    const likeCount = document.getElementById("likeCount");
+    const commentCount = document.getElementById("commentCount");
+    const commentsDrawer = document.getElementById("commentsDrawer");
+    const commentsList = document.getElementById("commentsList");
+    const commentInput = document.getElementById("commentInput");
 
     window.addEventListener("DOMContentLoaded", () => {
       initPlayerEvents();
-      initGestureNavigation();
-      fetchLiveManifest();
-      pollTimerId = setInterval(fetchLiveManifest, POLL_INTERVAL);
+      initVerticalSwipeNavigation();
+
+      // Immediate Unmuted Auto-Play Resolution: starts playing automatically without buttons
+      fetchLiveShortsFeed();
+      pollTimerId = setInterval(fetchLiveShortsFeed, POLL_INTERVAL);
+
+      // Dynamically unmute on first background screen interaction
+      document.body.addEventListener("pointerdown", () => {
+        if (videoPlayer.muted) {
+          videoPlayer.muted = false;
+        }
+      }, { once: true });
     });
 
-    function startShortsFeed() {
-      feedStarted = true;
-      startGate.style.display = "none";
-
-      if (currentQueue.length > 0) {
-        currentTrackIndex = 0;
-        playShort(currentQueue[0]);
-      }
-    }
-
     function initPlayerEvents() {
+      // Linear Progress Line Sync
       videoPlayer.addEventListener("timeupdate", () => {
         if (!videoPlayer.duration || !isFinite(videoPlayer.duration)) return;
         const pct = (videoPlayer.currentTime / videoPlayer.duration) * 100;
         progressBar.style.width = pct + "%";
       });
 
-      // Advance automatically or loop upon finish
+      // Loop current video as YouTube Shorts or auto-advance
       videoPlayer.addEventListener("ended", () => {
         advanceShort(1);
       });
@@ -589,31 +544,43 @@
       });
     }
 
-    function initGestureNavigation() {
+    /**
+     * Vertical Up / Down Swipe & Scroll Navigation (Exactly like YouTube Shorts)
+     */
+    function initVerticalSwipeNavigation() {
       container.addEventListener("touchstart", (e) => {
+        if (isDrawerOpen) return;
         touchStartY = e.changedTouches[0].screenY;
       }, { passive: true });
 
       container.addEventListener("touchend", (e) => {
+        if (isDrawerOpen) return;
         touchEndY = e.changedTouches[0].screenY;
-        handleSwipeGesture();
+        const deltaY = touchStartY - touchEndY;
+        if (deltaY > 50) {
+          advanceShort(1); // Swiped UP -> Next Short
+        } else if (deltaY < -50) {
+          advanceShort(-1); // Swiped DOWN -> Previous Short
+        }
       }, { passive: true });
 
+      // Desktop Wheel Scroll (Scroll down for next, scroll up for previous)
       let wheelThrottle = false;
       window.addEventListener("wheel", (e) => {
-        if (wheelThrottle || !feedStarted) return;
+        if (wheelThrottle || isDrawerOpen) return;
         wheelThrottle = true;
         setTimeout(() => wheelThrottle = false, 650);
 
-        if (e.deltaY > 25) {
+        if (e.deltaY > 20) {
           advanceShort(1);
-        } else if (e.deltaY < -25) {
+        } else if (e.deltaY < -20) {
           advanceShort(-1);
         }
       }, { passive: true });
 
+      // Keyboard Shortcuts: Up/Down Arrows and Spacebar
       window.addEventListener("keydown", (e) => {
-        if (!feedStarted) return;
+        if (isDrawerOpen) return;
         if (e.key === "ArrowDown") {
           e.preventDefault();
           advanceShort(1);
@@ -623,19 +590,24 @@
         } else if (e.key === " " || e.key === "k" || e.key === "K") {
           e.preventDefault();
           togglePlayPause();
-        } else if (e.key === "m" || e.key === "M") {
-          e.preventDefault();
-          toggleMute();
         }
       });
 
+      // Tap on Video: Toggle Play/Pause or Double-Tap Heart
       videoPlayer.addEventListener("click", (e) => {
+        if (isDrawerOpen) {
+          closeCommentsDrawer();
+          return;
+        }
+
         const currentTime = new Date().getTime();
         const tapGap = currentTime - lastTapTime;
 
         if (tapGap < 300 && tapGap > 0) {
           spawnDoubleTapHeart(e.clientX, e.clientY);
-          if (!isLiked) toggleLike();
+          if (!likeBtn.classList.contains("active-action")) {
+            handleLikeClick();
+          }
         } else {
           togglePlayPause();
         }
@@ -643,30 +615,12 @@
       });
     }
 
-    function handleSwipeGesture() {
-      const deltaY = touchStartY - touchEndY;
-      const threshold = 50;
-
-      if (deltaY > threshold) {
-        advanceShort(1);
-      } else if (deltaY < -threshold) {
-        advanceShort(-1);
-      }
-    }
-
     function advanceShort(direction) {
       if (currentQueue.length === 0) return;
 
-      if (direction > 0 && priorityQueue.length > 0) {
-        const urgent = priorityQueue.shift();
-        const found = currentQueue.findIndex(v => v.contentId === urgent.contentId);
-        if (found !== -1) currentTrackIndex = found;
-        playShort(urgent);
-        return;
-      }
-
       currentTrackIndex += direction;
 
+      // Infinite loop sequence: Latest to Oldest, then resets back to Latest
       if (currentTrackIndex >= currentQueue.length) {
         currentTrackIndex = 0;
       } else if (currentTrackIndex < 0) {
@@ -679,16 +633,30 @@
     function playShort(track) {
       if (!track) return;
 
+      // Update Channel Metadata & Verification
       const handle = track.uploaderUsername ? `@${track.uploaderUsername}` : "@creator";
       authorHandle.textContent = handle;
       authorInitial.textContent = handle.replace("@", "").charAt(0).toUpperCase();
       shortTitle.textContent = track.title || track.fileName || "Pulse Short";
 
-      isLiked = false;
-      document.getElementById("likeBtn").classList.remove("liked");
-      document.getElementById("likeCount").textContent = Math.floor(Math.random() * 80 + 10) + "K";
-      document.getElementById("commentCount").textContent = Math.floor(Math.random() * 800 + 100);
+      // Render Synchronized Sheet Counters
+      likeCount.textContent = formatMetric(track.likesCount || 0);
+      commentCount.textContent = formatMetric(track.commentsCount || 0);
 
+      // Synchronize Like / Dislike Active States
+      likeBtn.classList.toggle("active-action", track.userInteraction === "LIKE");
+      dislikeBtn.classList.toggle("active-action", track.userInteraction === "DISLIKE");
+
+      // Synchronize Subscription State
+      if (track.isSubscribed) {
+        subBtn.textContent = "Subscribed";
+        subBtn.classList.add("subscribed");
+      } else {
+        subBtn.textContent = "Subscribe";
+        subBtn.classList.remove("subscribed");
+      }
+
+      // Reset Players
       embedPlayer.style.display = "none";
       embedPlayer.src = "";
       videoPlayer.style.display = "block";
@@ -697,11 +665,12 @@
       videoPlayer.src = `https://drive.google.com/uc?export=download&id=${encodeURIComponent(track.fileId)}`;
       videoPlayer.load();
 
+      // Autoplay without user clicks
       const playPromise = videoPlayer.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
+          // If browser policy rejects unmuted autoplay, start muted immediately without waiting
           videoPlayer.muted = true;
-          updateSoundUI(true);
           videoPlayer.play().catch(() => {
             videoPlayer.style.display = "none";
             embedPlayer.style.display = "block";
@@ -728,31 +697,186 @@
       setTimeout(() => centerIcon.classList.remove("show"), 500);
     }
 
-    function toggleMute(e) {
+    /**
+     * 100% Accurate Google Sheets Sync: Likes
+     */
+    async function handleLikeClick(e) {
       if (e) e.stopPropagation();
-      videoPlayer.muted = !videoPlayer.muted;
-      updateSoundUI(videoPlayer.muted);
+      const track = currentQueue[currentTrackIndex];
+      if (!track) return;
+
+      const isCurrentlyLiked = likeBtn.classList.contains("active-action");
+      likeBtn.classList.toggle("active-action", !isCurrentlyLiked);
+      dislikeBtn.classList.remove("active-action");
+
+      // Optimistic update
+      let count = parseInt(track.likesCount, 10) || 0;
+      count = isCurrentlyLiked ? Math.max(0, count - 1) : count + 1;
+      track.likesCount = count;
+      likeCount.textContent = formatMetric(count);
+
+      try {
+        const resp = await executeGasRequest({
+          action: "toggleInteraction",
+          viewerId: viewerSessionId,
+          contentId: track.contentId,
+          type: "LIKE"
+        });
+
+        if (resp.success && resp.data) {
+          track.likesCount = resp.data.likes;
+          likeCount.textContent = formatMetric(resp.data.likes);
+          likeBtn.classList.toggle("active-action", resp.data.userStatus === "LIKE");
+        }
+      } catch (err) {
+        console.warn("Like sync notice:", err);
+      }
     }
 
-    function updateSoundUI(isMuted) {
-      soundIcon.textContent = isMuted ? "🔇" : "🔊";
-      soundText.textContent = isMuted ? "UNMUTE" : "MUTE";
+    /**
+     * 100% Accurate Google Sheets Sync: Dislikes
+     */
+    async function handleDislikeClick(e) {
+      if (e) e.stopPropagation();
+      const track = currentQueue[currentTrackIndex];
+      if (!track) return;
+
+      const isCurrentlyDisliked = dislikeBtn.classList.contains("active-action");
+      dislikeBtn.classList.toggle("active-action", !isCurrentlyDisliked);
+      likeBtn.classList.remove("active-action");
+
+      try {
+        const resp = await executeGasRequest({
+          action: "toggleInteraction",
+          viewerId: viewerSessionId,
+          contentId: track.contentId,
+          type: "DISLIKE"
+        });
+
+        if (resp.success && resp.data) {
+          track.likesCount = resp.data.likes;
+          likeCount.textContent = formatMetric(resp.data.likes);
+          dislikeBtn.classList.toggle("active-action", resp.data.userStatus === "DISLIKE");
+        }
+      } catch (err) {
+        console.warn("Dislike sync notice:", err);
+      }
     }
 
-    function toggleLike(e) {
+    /**
+     * 100% Accurate Google Sheets Sync: Subscriptions
+     */
+    async function handleSubscribeClick(e) {
       if (e) e.stopPropagation();
-      const likeBtn = document.getElementById("likeBtn");
-      isLiked = !isLiked;
-      likeBtn.classList.toggle("liked", isLiked);
+      const track = currentQueue[currentTrackIndex];
+      if (!track || !track.uploaderUsername) return;
+
+      const isSubbed = subBtn.classList.contains("subscribed");
+      subBtn.classList.toggle("subscribed", !isSubbed);
+      subBtn.textContent = !isSubbed ? "Subscribed" : "Subscribe";
+
+      try {
+        const resp = await executeGasRequest({
+          action: "toggleSubscription",
+          viewerId: viewerSessionId,
+          channelUsername: track.uploaderUsername
+        });
+
+        if (resp.success && resp.data) {
+          track.isSubscribed = resp.data.isSubscribed;
+          subBtn.textContent = resp.data.isSubscribed ? "Subscribed" : "Subscribe";
+          subBtn.classList.toggle("subscribed", resp.data.isSubscribed);
+        }
+      } catch (err) {
+        console.warn("Subscription sync notice:", err);
+      }
     }
 
-    function toggleDislike(e) {
+    /**
+     * Comments Drawer & Google Sheets Sync
+     */
+    async function openCommentsDrawer(e) {
       if (e) e.stopPropagation();
-      if (isLiked) toggleLike();
+      isDrawerOpen = true;
+      commentsDrawer.classList.add("open");
+      commentsList.innerHTML = `<div style="text-align:center;color:var(--text-muted);font-size:0.8rem;padding:20px;">Loading comments...</div>`;
+
+      const track = currentQueue[currentTrackIndex];
+      if (!track) return;
+
+      try {
+        const resp = await executeGasRequest({
+          action: "getComments",
+          contentId: track.contentId
+        }, "GET");
+
+        if (resp.success && resp.data && resp.data.comments) {
+          renderComments(resp.data.comments);
+        }
+      } catch (err) {
+        commentsList.innerHTML = `<div style="text-align:center;color:var(--text-muted);font-size:0.8rem;padding:20px;">No comments yet. Be the first!</div>`;
+      }
     }
 
-    function openComments(e) {
-      if (e) e.stopPropagation();
+    function closeCommentsDrawer() {
+      isDrawerOpen = false;
+      commentsDrawer.classList.remove("open");
+    }
+
+    function renderComments(comments) {
+      if (!comments || comments.length === 0) {
+        commentsList.innerHTML = `<div style="text-align:center;color:var(--text-muted);font-size:0.8rem;padding:20px;">No comments yet. Say something!</div>`;
+        return;
+      }
+
+      commentsList.innerHTML = "";
+      comments.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "comment-card";
+        div.innerHTML = `
+          <span class="author">@${c.authorName}</span>
+          <span class="text">${escapeHtml(c.text)}</span>
+        `;
+        commentsList.appendChild(div);
+      });
+    }
+
+    async function postComment() {
+      const text = commentInput.value.trim();
+      if (!text) return;
+
+      const track = currentQueue[currentTrackIndex];
+      if (!track) return;
+
+      commentInput.value = "";
+
+      try {
+        const resp = await executeGasRequest({
+          action: "addComment",
+          contentId: track.contentId,
+          authorName: "viewer_" + viewerSessionId.substring(4, 8),
+          commentText: text
+        });
+
+        if (resp.success && resp.data) {
+          track.commentsCount = resp.data.totalComments;
+          commentCount.textContent = formatMetric(resp.data.totalComments);
+
+          const div = document.createElement("div");
+          div.className = "comment-card";
+          div.innerHTML = `
+            <span class="author">@${resp.data.authorName}</span>
+            <span class="text">${escapeHtml(resp.data.commentText)}</span>
+          `;
+          if (commentsList.firstChild && commentsList.firstChild.textContent.includes("No comments")) {
+            commentsList.innerHTML = "";
+          }
+          commentsList.appendChild(div);
+          commentsList.scrollTop = commentsList.scrollHeight;
+        }
+      } catch (err) {
+        console.warn("Failed to post comment:", err);
+      }
     }
 
     function shareShort(e) {
@@ -764,20 +888,6 @@
         }).catch(() => {});
       } else {
         navigator.clipboard.writeText(window.location.href);
-      }
-    }
-
-    function handleSubscribe(e) {
-      if (e) e.stopPropagation();
-      const subBtn = e.target;
-      if (subBtn.textContent === "Subscribe") {
-        subBtn.textContent = "Subscribed";
-        subBtn.style.background = "rgba(255,255,255,0.2)";
-        subBtn.style.color = "#FFFFFF";
-      } else {
-        subBtn.textContent = "Subscribe";
-        subBtn.style.background = "#FFFFFF";
-        subBtn.style.color = "#000000";
       }
     }
 
@@ -795,49 +905,61 @@
       setTimeout(() => heart.remove(), 800);
     }
 
-    async function fetchLiveManifest() {
+    async function fetchLiveShortsFeed() {
       try {
-        let endpoint = `${GAS_ENDPOINT_URL}?action=getShortsFeed`;
-        if (cachedManifestEtag) endpoint += `&etag=${encodeURIComponent(cachedManifestEtag)}`;
-
+        let endpoint = `${GAS_ENDPOINT_URL}?action=getShortsFeed&viewerId=${encodeURIComponent(viewerSessionId)}`;
         const res = await fetch(endpoint, { method: "GET", mode: "cors" });
         const json = await res.json();
 
-        if (json.success && json.data) {
-          if (json.data.notModified) return;
-          if (json.data.etag) cachedManifestEtag = json.data.etag;
+        if (json.success && json.data && json.data.manifest && json.data.manifest.length > 0) {
+          const incoming = json.data.manifest;
 
-          if (json.data.manifest && json.data.manifest.length > 0) {
-            const incoming = json.data.manifest;
-
-            if (currentQueue.length === 0) {
-              currentQueue = incoming;
-              if (feedStarted) {
-                currentTrackIndex = 0;
-                playShort(currentQueue[0]);
-              }
-              return;
-            }
-
-            const existingIds = new Set(currentQueue.map(v => v.contentId));
-            const newBroadcasts = incoming.filter(v => !existingIds.has(v.contentId));
-
-            if (newBroadcasts.length > 0) {
-              newBroadcasts.forEach(nb => priorityQueue.push(nb));
-            }
-
-            const activeId = currentQueue[currentTrackIndex]?.contentId;
+          if (currentQueue.length === 0) {
             currentQueue = incoming;
+            currentTrackIndex = 0;
+            playShort(currentQueue[0]);
+            return;
+          }
 
-            if (activeId) {
-              const remapped = currentQueue.findIndex(v => v.contentId === activeId);
-              if (remapped !== -1) currentTrackIndex = remapped;
-            }
+          const activeId = currentQueue[currentTrackIndex]?.contentId;
+          currentQueue = incoming;
+
+          if (activeId) {
+            const remapped = currentQueue.findIndex(v => v.contentId === activeId);
+            if (remapped !== -1) currentTrackIndex = remapped;
           }
         }
       } catch (err) {
-        console.warn("Manifest background polling error:", err);
+        console.warn("Feed poll notice:", err);
       }
+    }
+
+    function formatMetric(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+      if (num >= 1000) return (num / 1000).toFixed(1) + "K";
+      return num.toString();
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+      });
+    }
+
+    async function executeGasRequest(data, method = "POST") {
+      let url = GAS_ENDPOINT_URL;
+      let options = { method: method, mode: "cors" };
+
+      if (method === "GET") {
+        const params = new URLSearchParams(data).toString();
+        url += (url.includes("?") ? "&" : "?") + params;
+      } else {
+        options.headers = { "Content-Type": "text/plain;charset=utf-8" };
+        options.body = JSON.stringify(data);
+      }
+
+      const res = await fetch(url, options);
+      return await res.json();
     }
   </script>
 </body>

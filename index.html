@@ -73,27 +73,6 @@
       letter-spacing: 0.5px;
     }
 
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
-      background: var(--card-dark);
-      border: 1px solid var(--border-dark);
-      border-radius: 999px;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-    }
-
-    .beacon {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #00E676;
-      box-shadow: 0 0 8px #00E676;
-    }
-
     .card {
       background: var(--card-dark);
       border: 1px solid var(--border-dark);
@@ -237,12 +216,10 @@
       cursor: pointer;
     }
 
-    /* Vertical 9:16 Shorts Monitor Frame */
+    /* Dynamic Camera Frame: Transitions between Portrait 9:16 and Landscape 16:9 */
     .shorts-viewport-wrap {
       width: 100%;
-      max-width: 320px;
       margin: 0 auto 16px auto;
-      aspect-ratio: 9 / 16;
       background: #000000;
       border-radius: 18px;
       overflow: hidden;
@@ -252,6 +229,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: aspect-ratio 0.3s ease;
+    }
+
+    .shorts-viewport-wrap.portrait-mode {
+      max-width: 300px;
+      aspect-ratio: 9 / 16;
+    }
+
+    .shorts-viewport-wrap.landscape-mode {
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
     }
 
     .shorts-video-preview {
@@ -265,13 +253,13 @@
       top: 14px;
       left: 14px;
       background: rgba(0, 0, 0, 0.75);
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 999px;
       display: flex;
       align-items: center;
       gap: 6px;
       font-family: var(--font-mono);
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       border: 1px solid rgba(255, 0, 0, 0.4);
     }
 
@@ -289,26 +277,23 @@
       50% { opacity: 0.3; }
     }
 
+    .mode-desc-pill {
+      position: absolute;
+      bottom: 14px;
+      background: rgba(0, 0, 0, 0.75);
+      color: var(--yt-white);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+    }
+
     .source-selection-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-bottom: 14px;
-    }
-
-    .dropzone {
-      border: 2px dashed var(--border-dark);
-      border-radius: 14px;
-      padding: clamp(24px, 5vw, 36px);
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: rgba(0, 0, 0, 0.25);
-    }
-
-    .dropzone:hover {
-      border-color: var(--yt-red);
-      background: rgba(255, 0, 0, 0.05);
     }
 
     .progress-box {
@@ -389,10 +374,6 @@
         </div>
         <div class="brand-title">SHORTS // <span>STUDIO</span></div>
       </div>
-      <div class="status-badge">
-        <span class="beacon"></span>
-        <span id="systemState">READY</span>
-      </div>
     </header>
 
     <div id="alertBox" class="alert"></div>
@@ -402,13 +383,13 @@
       <div class="tabs" role="tablist">
         <button id="tabLoginBtn" class="tab-btn active" onclick="switchAuthTab('login')">SIGN IN</button>
         <button id="tabRegisterBtn" class="tab-btn" onclick="switchAuthTab('register')">CREATE CHANNEL</button>
-        <button id="tabResetBtn" class="tab-btn" onclick="switchAuthTab('reset')">PASSWORD</button>
+        <button id="tabResetBtn" class="tab-btn" onclick="switchAuthTab('reset')">RESET</button>
       </div>
 
       <form id="authForm" onsubmit="handleAuthSubmit(event)">
         <div id="fullNameGroup" class="form-group" style="display: none;">
-          <label for="fullName">Creator / Channel Name</label>
-          <input type="text" id="fullName" autocomplete="name" placeholder="e.g. Alex Vlogs" maxlength="80">
+          <label for="fullName">Channel / Creator Name</label>
+          <input type="text" id="fullName" autocomplete="name" placeholder="e.g. Maya Tech" maxlength="80">
         </div>
 
         <div class="form-group">
@@ -423,7 +404,7 @@
 
         <div id="confirmPassGroup" class="form-group" style="display: none;">
           <label for="confirmPassword">Confirm Password</label>
-          <input type="password" id="confirmPassword" autocomplete="new-password" placeholder="Re-enter your password" maxlength="100">
+          <input type="password" id="confirmPassword" autocomplete="new-password" placeholder="Re-enter password" maxlength="100">
         </div>
 
         <button type="submit" id="authSubmitBtn" class="btn btn-primary">
@@ -432,68 +413,52 @@
       </form>
     </div>
 
-    <!-- CREATOR STUDIO CONSOLE -->
+    <!-- CAMERA-ONLY STUDIO -->
     <div id="studioPanel" class="card" style="display: none;">
       <div class="user-banner">
         <div class="user-info">
           <h3 id="profileName">Creator</h3>
-          <p id="profileMeta">@channel - Verified Shorts Creator</p>
+          <p id="profileMeta">@channel &bull; Max 60s Takes</p>
         </div>
         <button class="logout-btn" onclick="logout()">LOG OUT</button>
       </div>
 
-      <div class="tabs" role="tablist">
-        <button id="tabCameraBtn" class="tab-btn active" onclick="switchStudioTab('camera')">CAMERA (9:16)</button>
-        <button id="tabFileBtn" class="tab-btn" onclick="switchStudioTab('file')">UPLOAD SHORTS</button>
+      <!-- CAMERA RECORDING (No File Pickers) -->
+      <div class="source-selection-grid">
+        <button id="frontCamBtn" class="btn btn-secondary" onclick="initializeCameraCapture('user')">🤳 FRONT (PORTRAIT)</button>
+        <button id="backCamBtn" class="btn btn-secondary" onclick="initializeCameraCapture('environment')">📷 BACK (LANDSCAPE)</button>
       </div>
 
-      <!-- 9:16 VERTICAL CAMERA RECORDER -->
-      <div id="cameraConsole">
-        <div class="source-selection-grid">
-          <button id="frontCamBtn" class="btn btn-secondary" onclick="initializeCameraCapture('user')">🤳 FRONT CAM</button>
-          <button id="backCamBtn" class="btn btn-secondary" onclick="initializeCameraCapture('environment')">📷 BACK CAM</button>
+      <div id="cameraFrame" class="shorts-viewport-wrap portrait-mode">
+        <video id="studioLivePreview" class="shorts-video-preview" autoplay muted playsinline></video>
+        <div id="recBadge" class="rec-badge-overlay" style="display: none;">
+          <span class="rec-dot"></span>
+          <span id="recTimecode">00:00 / 01:00</span>
         </div>
-
-        <div class="shorts-viewport-wrap">
-          <video id="studioLivePreview" class="shorts-video-preview" autoplay muted playsinline></video>
-          <div id="recBadge" class="rec-badge-overlay" style="display: none;">
-            <span class="rec-dot"></span>
-            <span id="recTimecode">00:00</span>
-          </div>
-        </div>
-
-        <div class="source-selection-grid">
-          <button id="startRecBtn" class="btn btn-primary" onclick="startVideoRecording()" disabled>RECORD</button>
-          <button id="stopRecBtn" class="btn btn-danger" onclick="stopVideoRecording()" disabled>STOP</button>
-        </div>
+        <div id="modePill" class="mode-desc-pill">PORTRAIT 9:16</div>
       </div>
 
-      <!-- FILE UPLOAD DROPZONE -->
-      <div id="fileConsole" style="display: none;">
-        <div class="dropzone" id="dropArea" onclick="document.getElementById('videoFileInput').click()">
-          <svg style="width:40px;height:40px;fill:var(--yt-muted);margin-bottom:8px;" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
-          <p style="font-weight:700;">Select Shorts Video</p>
-          <p style="font-size:0.75rem;color:var(--yt-muted);margin-top:4px;">Recommended: 9:16 Vertical (Max 256MB)</p>
-          <input type="file" id="videoFileInput" accept="video/*" style="display:none" onchange="handleVideoFileSelect(event)">
-        </div>
+      <div class="source-selection-grid">
+        <button id="startRecBtn" class="btn btn-primary" onclick="startVideoRecording()" disabled>RECORD</button>
+        <button id="stopRecBtn" class="btn btn-danger" onclick="stopVideoRecording()" disabled>STOP</button>
       </div>
 
-      <!-- REVIEW & INGESTION -->
+      <!-- REVIEW & LIGHTNING-FAST UPLOAD -->
       <div id="submissionContainer" style="margin-top: 16px;">
         <div id="previewBox" class="preview-player">
-          <label>Shorts Review</label>
-          <div class="shorts-viewport-wrap" style="margin-bottom: 12px;">
+          <label>Review Take (Max 60 Seconds)</label>
+          <div id="reviewFrame" class="shorts-viewport-wrap portrait-mode" style="margin-bottom: 12px;">
             <video id="reviewVideo" class="shorts-video-preview" controls playsinline></video>
           </div>
         </div>
 
         <div class="form-group">
           <label for="trackTitle">Caption / Short Title</label>
-          <input type="text" id="trackTitle" placeholder="Add a title or #hashtags" maxlength="100">
+          <input type="text" id="trackTitle" placeholder="Add a title or #shorts" maxlength="100">
         </div>
 
-        <button id="publishBtn" class="btn btn-primary" onclick="initiateChunkedUploadPipeline()" disabled>
-          <span>PUBLISH TO SHORTS FEED</span>
+        <button id="publishBtn" class="btn btn-primary" onclick="initiateLightningUploadPipeline()" disabled>
+          <span>PUBLISH INSTANTLY</span>
         </button>
 
         <div id="uploadProgress" class="progress-box">
@@ -518,8 +483,8 @@
 
   <script>
     const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbw5SRk0W7-aOA20VB5oxGRagNi8ZuATPicdX65pDBQFjA5pbtYI01lmTXNUUGKL7sqc/exec";
-    const MAX_FILE_SIZE = 256 * 1024 * 1024;
-    const CHUNK_BYTE_SIZE = 3 * 1024 * 1024; // 3MB chunk slice
+    const MAX_RECORDING_SECONDS = 60; // Hard cutoff at 60s
+    const CHUNK_BYTE_SIZE = 1 * 1024 * 1024; // 1MB lightning slices
 
     let currentAuthMode = "login";
     let currentUserSession = null;
@@ -531,10 +496,10 @@
     let processedBlob = null;
     let processedDuration = 0;
     let activePreviewBlobUrl = null;
+    let currentOrientation = "portrait"; // "portrait" (front) or "landscape" (back)
 
     window.addEventListener("DOMContentLoaded", () => {
       checkStoredSession();
-      initVideoDropzone();
     });
 
     window.addEventListener("beforeunload", () => {
@@ -689,8 +654,8 @@
       document.getElementById("authPanel").style.display = "none";
       document.getElementById("studioPanel").style.display = "block";
       document.getElementById("profileName").textContent = currentUserSession.fullName;
-      document.getElementById("profileMeta").textContent = `@${currentUserSession.username} - Shorts Creator`;
-      initializeCameraCapture('user');
+      document.getElementById("profileMeta").textContent = `@${currentUserSession.username} - Verified Creator`;
+      initializeCameraCapture('user'); // Default to Front camera in portrait
     }
 
     function logout() {
@@ -704,14 +669,6 @@
       location.reload();
     }
 
-    function switchStudioTab(tab) {
-      const isCam = tab === "camera";
-      document.getElementById("tabCameraBtn").className = isCam ? "tab-btn active" : "tab-btn";
-      document.getElementById("tabFileBtn").className = !isCam ? "tab-btn active" : "tab-btn";
-      document.getElementById("cameraConsole").style.display = isCam ? "block" : "none";
-      document.getElementById("fileConsole").style.display = !isCam ? "block" : "none";
-    }
-
     function teardownMediaTracks() {
       if (videoMediaStream) {
         videoMediaStream.getTracks().forEach(t => t.stop());
@@ -719,18 +676,36 @@
       }
     }
 
+    /**
+     * Camera Orientation:
+     * - Front Camera ('user') = Portrait (9:16)
+     * - Back Camera ('environment') = Landscape (16:9)
+     */
     async function initializeCameraCapture(facingMode) {
       teardownMediaTracks();
-      document.getElementById("frontCamBtn").style.borderColor = facingMode === "user" ? "var(--yt-red)" : "var(--border-dark)";
-      document.getElementById("backCamBtn").style.borderColor = facingMode === "environment" ? "var(--yt-red)" : "var(--border-dark)";
 
-      // Native 9:16 Vertical Constraints
+      const cameraFrame = document.getElementById("cameraFrame");
+      const modePill = document.getElementById("modePill");
+
+      if (facingMode === "environment") {
+        currentOrientation = "landscape";
+        cameraFrame.className = "shorts-viewport-wrap landscape-mode";
+        modePill.textContent = "LANDSCAPE 16:9 (BACK CAM)";
+        document.getElementById("backCamBtn").style.borderColor = "var(--yt-red)";
+        document.getElementById("frontCamBtn").style.borderColor = "var(--border-dark)";
+      } else {
+        currentOrientation = "portrait";
+        cameraFrame.className = "shorts-viewport-wrap portrait-mode";
+        modePill.textContent = "PORTRAIT 9:16 (FRONT CAM)";
+        document.getElementById("frontCamBtn").style.borderColor = "var(--yt-red)";
+        document.getElementById("backCamBtn").style.borderColor = "var(--border-dark)";
+      }
+
       const constraints = {
         video: {
           facingMode: facingMode === "environment" ? { ideal: "environment" } : "user",
-          width: { ideal: 720 },
-          height: { ideal: 1280 },
-          aspectRatio: { ideal: 9 / 16 }
+          width: { ideal: facingMode === "environment" ? 1280 : 720 },
+          height: { ideal: facingMode === "environment" ? 720 : 1280 }
         },
         audio: true
       };
@@ -741,7 +716,7 @@
         try {
           videoMediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         } catch (e) {
-          showAlert("Camera access denied or unavailable: " + e.message);
+          showAlert("Camera access failed: " + e.message);
           return;
         }
       }
@@ -753,6 +728,7 @@
 
     function startVideoRecording() {
       if (!videoMediaStream) return;
+
       let mimeType = "video/webm;codecs=vp8,opus";
       if (!MediaRecorder.isTypeSupported(mimeType)) {
         mimeType = MediaRecorder.isTypeSupported("video/mp4") ? "video/mp4" : "video/webm";
@@ -771,10 +747,13 @@
         activePreviewBlobUrl = URL.createObjectURL(processedBlob);
 
         const reviewVid = document.getElementById("reviewVideo");
+        const reviewFrame = document.getElementById("reviewFrame");
+        reviewFrame.className = `shorts-viewport-wrap ${currentOrientation}-mode`;
+
         reviewVid.src = activePreviewBlobUrl;
         document.getElementById("previewBox").style.display = "block";
         document.getElementById("publishBtn").disabled = false;
-        processedDuration = Math.round((Date.now() - recStartTime) / 1000);
+        processedDuration = Math.min(MAX_RECORDING_SECONDS, Math.round((Date.now() - recStartTime) / 1000));
       };
 
       mediaRecorder.start(1000);
@@ -788,60 +767,28 @@
 
     function stopVideoRecording() {
       if (!mediaRecorder) return;
-      mediaRecorder.stop();
+      if (mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+      }
       clearInterval(recTimerId);
       document.getElementById("recBadge").style.display = "none";
       document.getElementById("startRecBtn").disabled = false;
       document.getElementById("stopRecBtn").disabled = true;
     }
 
+    // 60-Second Hard Cutoff Countdown
     function updateVideoTimer() {
-      const totalSeconds = Math.floor((Date.now() - recStartTime) / 1000);
-      const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
-      const secs = String(totalSeconds % 60).padStart(2, "0");
-      document.getElementById("recTimecode").textContent = `${mins}:${secs}`;
-    }
+      const elapsedSeconds = Math.floor((Date.now() - recStartTime) / 1000);
 
-    function initVideoDropzone() {
-      const dropzone = document.getElementById("dropArea");
-      ["dragenter", "dragover"].forEach(name => {
-        dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.style.borderColor = "var(--yt-red)"; });
-      });
-      ["dragleave", "drop"].forEach(name => {
-        dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.style.borderColor = "var(--border-dark)"; });
-      });
-      dropzone.addEventListener("drop", (e) => {
-        const files = e.dataTransfer.files;
-        if (files.length > 0) processSelectedVideoFile(files[0]);
-      });
-    }
-
-    function handleVideoFileSelect(e) {
-      if (e.target.files.length > 0) processSelectedVideoFile(e.target.files[0]);
-    }
-
-    function processSelectedVideoFile(file) {
-      if (!file.type.startsWith("video/") && !file.name.match(/\.(mp4|webm|mov|avi|mkv)$/i)) {
-        showAlert("Please select a valid video file.");
-        return;
-      }
-      if (file.size > MAX_FILE_SIZE) {
-        showAlert("File exceeds 256 MB buffer limit.");
+      if (elapsedSeconds >= MAX_RECORDING_SECONDS) {
+        stopVideoRecording();
+        showAlert("Reached maximum 60 seconds limit.", false);
         return;
       }
 
-      processedBlob = file;
-      if (activePreviewBlobUrl) URL.revokeObjectURL(activePreviewBlobUrl);
-      activePreviewBlobUrl = URL.createObjectURL(file);
-
-      const reviewVid = document.getElementById("reviewVideo");
-      reviewVid.src = activePreviewBlobUrl;
-      document.getElementById("previewBox").style.display = "block";
-      document.getElementById("publishBtn").disabled = false;
-
-      reviewVid.addEventListener("loadedmetadata", () => {
-        processedDuration = isFinite(reviewVid.duration) ? reviewVid.duration : 0;
-      });
+      const mins = String(Math.floor(elapsedSeconds / 60)).padStart(2, "0");
+      const secs = String(elapsedSeconds % 60).padStart(2, "0");
+      document.getElementById("recTimecode").textContent = `${mins}:${secs} / 01:00`;
     }
 
     function arrayBufferToBase64(buffer) {
@@ -855,9 +802,12 @@
       return btoa(binary);
     }
 
-    async function initiateChunkedUploadPipeline() {
+    /**
+     * Lightning Fast Chunked Upload Pipeline
+     */
+    async function initiateLightningUploadPipeline() {
       if (!processedBlob) {
-        showAlert("No video file selected.");
+        showAlert("No recorded video take available.");
         return;
       }
 
@@ -880,7 +830,7 @@
       }
 
       try {
-        setProgressUI("Initializing Upload...", 2);
+        setProgressUI("Fast Ingestion Handshake...", 3);
 
         const initResp = await executeGasRequest({
           action: "initChunkedUpload",
@@ -891,7 +841,7 @@
         });
 
         if (!initResp.success || !initResp.data.uploadSessionId) {
-          throw new Error(initResp.error || "Failed to initiate session.");
+          throw new Error(initResp.error || "Failed to start upload session.");
         }
 
         const sessionId = initResp.data.uploadSessionId;
@@ -907,7 +857,7 @@
 
           chunkIndex++;
           const currentPercent = 5 + ((offset / totalBytes) * 88);
-          setProgressUI(`Uploading: ${chunkIndex}/${totalChunks} (${Math.round((offset / totalBytes) * 100)}%)`, currentPercent);
+          setProgressUI(`Streaming Slice ${chunkIndex}/${totalChunks}`, currentPercent);
 
           const chunkResp = await executeGasRequest({
             action: "appendChunk",
@@ -916,13 +866,13 @@
           });
 
           if (!chunkResp.success) {
-            throw new Error(chunkResp.error || "Chunk upload interrupted.");
+            throw new Error(chunkResp.error || "Transmission slice dropped.");
           }
 
           offset += CHUNK_BYTE_SIZE;
         }
 
-        setProgressUI("Processing Short...", 96);
+        setProgressUI("Finalizing on Google Drive...", 96);
 
         const finalResp = await executeGasRequest({
           action: "finalizeUpload",
@@ -933,7 +883,8 @@
           },
           metadata: {
             title: title,
-            fileName: processedBlob.name || "short.mp4",
+            orientation: currentOrientation,
+            fileName: `${currentOrientation}_short.mp4`,
             mimeType: processedBlob.type || "video/mp4",
             durationSeconds: Math.round(processedDuration),
             sizeBytes: processedBlob.size
@@ -941,8 +892,8 @@
         });
 
         if (finalResp.success) {
-          setProgressUI("Short Live on Feed!", 100);
-          showAlert("Short published successfully!", false);
+          setProgressUI("Live on Shorts Feed!", 100);
+          showAlert("Published successfully!", false);
           setTimeout(() => { location.reload(); }, 1200);
         } else {
           throw new Error(finalResp.error || "Failed to finalize short.");
@@ -954,7 +905,7 @@
     }
 
     async function executeGasRequest(data, method = "POST", maxRetries = 3) {
-      let delay = 1500;
+      let delay = 1000;
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
           let url = GAS_ENDPOINT_URL;
@@ -973,7 +924,7 @@
         } catch (err) {
           if (attempt === maxRetries) throw err;
           await new Promise(r => setTimeout(r, delay));
-          delay *= 2;
+          delay *= 1.5;
         }
       }
     }
